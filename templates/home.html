@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="welcome-banner">
+<div class="hero-section">
+
+    <img src="{{ url_for('static', filename='images/cafe-interior-design.jpg') }}" class="hero-img">
+
+    <div class="hero-text">
+        <h1>☕ Café Manager</h1>
+        <p>Smart café management system for orders, tables and menu</p>
+    </div>
+
+</div>
+
+
+<div class="role-container">
+
+    <div class="role-card">
+        <div class="icon">👨‍💼</div>
+
+        <h3>Admin</h3>
+
+        <p>Manage menu items, view reports and control inventory.</p>
+
+        <a href="/dashboard" class="btn">Open Admin Panel</a>
+    </div>
+
+
+    <div class="role-card">
+        <div class="icon">🧑‍🍳</div>
+
+        <h3>Staff</h3>
+
+        <p>Manage tables and handle customer orders.</p>
+
+        <a href="/tables" class="btn">Open Staff Panel</a>
+    </div>
+
+
+    <div class="role-card">
+        <div class="icon">🧑‍💻</div>
+
+        <h3>Customer</h3>
+
+        <p>Browse the menu and place orders easily.</p>
+
+        <a href="/menu" class="btn">Open Menu</a>
+    </div>
+
+</div>
+
+{% endblock %}

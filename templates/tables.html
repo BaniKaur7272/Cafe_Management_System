@@ -1,0 +1,45 @@
+<h2>Add Table</h2>
+
+<form action="/add_table" method="POST">
+
+<input type="number" name="table_number" placeholder="Table Number" required>
+
+<select name="status">
+<option value="available">Available</option>
+<option value="occupied">Occupied</option>
+</select>
+
+<button type="submit">Add Table</button>
+
+</form>
+<h2>Tables</h2>
+
+<div class="tables">
+
+{% for table in tables %}
+
+<div>
+    <h3>Table {{ table.table_number }}</h3>
+
+    <p>Status: {{ table.status }}</p>
+
+    {% if table.status == "occupied" %}
+        <span style="color:red;">Occupied</span>
+    {% else %}
+        <span style="color:green;">Available</span>
+    {% endif %}
+
+
+
+{% if table.status == "occupied" %}
+<a href="/free_table/{{ table.table_number }}">
+<button>Free Table</button>
+</a>
+{% endif %}
+
+
+</div>
+
+{% endfor %}
+
+</div>

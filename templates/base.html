@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Café Manager</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2>Café Manager</h2>
+
+<a href="/">Home</a>
+<a href="/dashboard">Dashboard</a>
+<a href="/menu">Menu</a>
+<a href="/tables">Tables</a>
+
+</div>
+
+<div class="content">
+{% block content %}
+{% endblock %}
+</div>
+
+</body>
+</html>

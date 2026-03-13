@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Dashboard</h1>
+
+<div class="stats">
+
+<div class="stat">
+<h3>Total Menu Items</h3>
+<p>{{ total_items }}</p>
+</div>
+
+<div class="stat">
+<h3>Total Tables</h3>
+<p>{{ total_tables }}</p>
+</div>
+
+<div class="stat">
+<h3>Total Orders</h3>
+<p>{{ total_orders }}</p>
+</div>
+
+<div class="stat">
+<h3>Total Revenue</h3>
+<p>₹{{ revenue }}</p>
+</div>
+
+</div>
+
+{% endblock %}

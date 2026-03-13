@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Menu</h2>
+
+<div class="menu-grid">
+
+{% for item in items %}
+
+<div class="menu-card">
+<img src="{{ url_for('static', filename='images/' + item.image) }}" width="250">
+
+<h3>{{ item.name }}</h3>
+<p>{{ item.category }}</p>
+<p>₹{{ item.price }}</p>
+<p>Stock: {{ item.stock }}</p>
+
+<form action="/add_to_cart" method="POST">
+<input type="hidden" name="item_id" value="{{ item.id }}">
+<button type="submit">Add</button>
+</form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<hr>
+
+<h2>Order</h2>
+
+<form action="/place_order" method="POST">
+
+<label>Select Table</label>
+
+<select name="table_number">
+{% for table in tables %}
+<option value="{{ table.table_number }}">Table {{ table.table_number }}</option>
+{% endfor %}
+</select>
+
+<h3>Cart</h3>
+
+<ul>
+{% for item in session.get("cart", []) %}
+<li>{{ item.name }} - ₹{{ item.price }}</li>
+{% endfor %}
+</ul>
+
+<h3>Total: ₹{{ total }}</h3>
+
+<button type="submit">Place Order</button>
+
+</form>
+
+<hr>
+
+
+<script>
+
+let total = 0;
+let cartItems = [];
+
+function addToCart(name, price){
+
+price = parseInt(price);
+
+total += price;
+
+cartItems.push(name);
+
+document.getElementById("total").innerText = total;
+
+let li = document.createElement("li");
+li.innerText = name + " - ₹" + price;
+
+document.getElementById("cart").appendChild(li);
+
+}
+
+function placeOrder(){
+
+let table = document.getElementById("table").value;
+
+if(table == ""){
+alert("Select table first");
+return;
+}
+
+fetch("/place_order",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+table:table,
+total:total,
+items:cartItems
+})
+})
+.then(res=>res.json())
+.then(data=>{
+
+if(data.status=="occupied"){
+alert("Table already occupied!");
+return;
+}
+
+alert("Order placed successfully!");
+window.location.href="/order_success";
+
+})
+
+}
+
+</script>
+{% endblock %}
