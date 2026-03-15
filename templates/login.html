@@ -14,7 +14,7 @@ height:100vh;
 
 .left{
 width:50%;
-background:linear-gradient(135deg,#0f4c75,#3282b8);
+background:linear-gradient(135deg,#220e01,#964B00);
 color:white;
 display:flex;
 flex-direction:column;
@@ -56,7 +56,7 @@ background:#eee;
 }
 
 .role-buttons button.active{
-background:#3282b8;
+background:#411900;
 color:white;
 }
 
@@ -71,7 +71,7 @@ border-radius:6px;
 .login-btn{
 width:100%;
 padding:12px;
-background:#3282b8;
+background:#000;
 border:none;
 color:white;
 border-radius:6px;
@@ -79,18 +79,23 @@ cursor:pointer;
 font-weight:bold;
 }
 
+
+
 </style>
 </head>
 
 <body>
 
-<div class="left">
+<div class="left" >
+
+    <img src="{{ url_for('static', filename='images/banner.jpg') }}" class="hero-img">
 
 <h1>Welcome to Cafe Manager</h1>
 
 <p>
 Manage orders, tables and staff easily with our smart cafe management system.
 </p>
+<br>
 
 </div>
 
@@ -100,7 +105,7 @@ Manage orders, tables and staff easily with our smart cafe management system.
 
 <h2>Sign In</h2>
 
-<form method="POST" action="/login">
+<form method="POST" action="/">
 
 <div class="role-buttons">
 

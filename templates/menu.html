@@ -2,24 +2,114 @@
 
 {% block content %}
 
-<h2>Menu</h2>
+<style>
 
-<div class="menu-grid">
+.page{
+display:flex;
+gap:10px;
+text-align: center;
+text-shadow: 5px,solid,black;
+padding:20px;
+}
+
+/* MENU GRID */
+
+.menu-container{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+flex:3;
+}
+
+.menu-card{
+background:white;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+padding:15px;
+text-align:center;
+transition:0.2s;
+}
+
+.menu-card:hover{
+transform:scale(1.03);
+}
+
+.menu-card img{
+width:100%;
+height:160px;
+object-fit:cover;
+border-radius:10px;
+}
+
+.menu-card h3{
+margin-top:10px;
+}
+
+.add-btn{
+background:#6b3e26;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* CART */
+
+.cart-panel{
+flex:1;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+height:fit-content;
+}
+
+.cart-panel h2{
+margin-bottom:10px;
+}
+
+.place-btn{
+background:#28a745;
+color:white;
+border:none;
+padding:10px;
+width:100%;
+border-radius:8px;
+cursor:pointer;
+}
+
+</style>
+
+
+<div class="page">
+
+<!-- MENU -->
+
+<h2>Our Menu</h2>
+
+<br><br>
+
+<div class="menu-container">
 
 {% for item in items %}
 
 <div class="menu-card">
-<img src="{{ url_for('static', filename='images/' + item.image) }}" width="250">
+
+<img src="{{ url_for('static', filename='images/' + item.image) }}">
 
 <h3>{{ item.name }}</h3>
+
 <p>{{ item.category }}</p>
-<p>₹{{ item.price }}</p>
+
+<p><b>₹{{ item.price }}</b></p>
+
 <p>Stock: {{ item.stock }}</p>
 
-<form action="/add_to_cart" method="POST">
-<input type="hidden" name="item_id" value="{{ item.id }}">
-<button type="submit">Add</button>
-</form>
+<button class="add-btn"
+onclick="addToCart('{{ item.name }}', {{ item.price }})">
+Add
+</button>
 
 </div>
 
@@ -27,93 +117,111 @@
 
 </div>
 
-<hr>
 
-<h2>Order</h2>
 
-<form action="/place_order" method="POST">
+<!-- CART -->
+
+<div class="cart-panel">
+
+<h2>Your Order</h2>
 
 <label>Select Table</label>
 
-<select name="table_number">
+<select id="table">
+
 {% for table in tables %}
-<option value="{{ table.table_number }}">Table {{ table.table_number }}</option>
+
+<option value="{{table.table_number}}">
+Table {{table.table_number}}
+</option>
+
 {% endfor %}
+
 </select>
+
 
 <h3>Cart</h3>
 
-<ul>
-{% for item in session.get("cart", []) %}
-<li>{{ item.name }} - ₹{{ item.price }}</li>
-{% endfor %}
-</ul>
+<ul id="cart-items"></ul>
 
-<h3>Total: ₹{{ total }}</h3>
+<h3>Total ₹<span id="total">0</span></h3>
 
-<button type="submit">Place Order</button>
+
+<form action="/place_order" method="POST">
+
+<input type="hidden" name="items" id="items">
+<input type="hidden" name="total_price" id="total_price">
+
+<button class="place-btn">Place Order</button>
 
 </form>
 
-<hr>
+</div>
+
+
+</div>
+
 
 
 <script>
 
-let total = 0;
-let cartItems = [];
+let cart = []
+let total = 0
 
-function addToCart(name, price){
+function addToCart(name,price){
 
-price = parseInt(price);
+cart.push({name:name, price:price})
 
-total += price;
+total += price
 
-cartItems.push(name);
-
-document.getElementById("total").innerText = total;
-
-let li = document.createElement("li");
-li.innerText = name + " - ₹" + price;
-
-document.getElementById("cart").appendChild(li);
+updateCart()
 
 }
 
-function placeOrder(){
+function updateCart(){
 
-let table = document.getElementById("table").value;
+let cartList = document.getElementById("cart-items")
 
-if(table == ""){
-alert("Select table first");
-return;
-}
+cartList.innerHTML=""
 
-fetch("/place_order",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-table:table,
-total:total,
-items:cartItems
-})
-})
-.then(res=>res.json())
-.then(data=>{
+cart.forEach(item => {
 
-if(data.status=="occupied"){
-alert("Table already occupied!");
-return;
-}
+let li=document.createElement("li")
 
-alert("Order placed successfully!");
-window.location.href="/order_success";
+li.innerText = item.name + " - ₹" + item.price
+
+cartList.appendChild(li)
 
 })
 
+document.getElementById("total").innerText = total
+
+document.getElementById("items").value = JSON.stringify(cart)
+
+document.getElementById("total_price").value = total
+
+document.getElementById("search").addEventListener("keyup", function(){
+
+let value = this.value.toLowerCase()
+
+let items = document.querySelectorAll(".menu-card")
+
+items.forEach(item => {
+
+let name = item.innerText.toLowerCase()
+
+if(name.includes(value)){
+item.style.display="block"
+}
+else{
+item.style.display="none"
 }
 
+})
+})
+}
 </script>
+
+
+
 {% endblock %}

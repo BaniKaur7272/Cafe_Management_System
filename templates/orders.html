@@ -1,0 +1,10 @@
+<h2>Orders</h2>
+
+{% for order in orders %}
+
+<p>
+Table {{order.table_number}} -
+₹{{order.total_price}}
+</p>
+
+{% endfor %}

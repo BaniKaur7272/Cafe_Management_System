@@ -1,45 +1,84 @@
-<h2>Add Table</h2>
+<!DOCTYPE html>
+<html>
+<head>
 
-<form action="/add_table" method="POST">
+<title>Tables</title>
 
-<input type="number" name="table_number" placeholder="Table Number" required>
+<style>
 
-<select name="status">
-<option value="available">Available</option>
-<option value="occupied">Occupied</option>
-</select>
+body{
+font-family:Arial;
+text-align:center;
+}
 
-<button type="submit">Add Table</button>
+.table-grid{
+display:grid;
+grid-template-columns:repeat(4,150px);
+gap:20px;
+justify-content:center;
+margin-top:40px;
+}
 
-</form>
-<h2>Tables</h2>
+.table-card{
+padding:30px;
+border-radius:10px;
+font-weight:bold;
+color:white;
+}
 
-<div class="tables">
+.available{
+background:#2ecc71;
+}
+
+.occupied{
+background:#e74c3c;
+}
+
+a{
+color:white;
+text-decoration:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Cafe Tables</h1>
+
+<div class="table-grid">
 
 {% for table in tables %}
 
-<div>
-    <h3>Table {{ table.table_number }}</h3>
+<div class="table-card {% if table.status=='available' %}available{% else %}occupied{% endif %}">
 
-    <p>Status: {{ table.status }}</p>
+Table {{table.table_number}}
 
-    {% if table.status == "occupied" %}
-        <span style="color:red;">Occupied</span>
-    {% else %}
-        <span style="color:green;">Available</span>
-    {% endif %}
+<br><br>
 
+{% if table.status=="available" %}
 
+<a href="/book_table/{{table.table_number}}">
+Book Table
+</a>
+{% elif table.status == "occupied" %}
 
-{% if table.status == "occupied" %}
-<a href="/free_table/{{ table.table_number }}">
+<a href="/free_table/{{table.table_number}}">
 <button>Free Table</button>
 </a>
-{% endif %}
 
+{% else %}
+
+Occupied
+
+{% endif %}
 
 </div>
 
 {% endfor %}
 
 </div>
+
+</body>
+</html>

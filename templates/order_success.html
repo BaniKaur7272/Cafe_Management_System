@@ -1,11 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h2>🎉 Your Order is Successful!</h2>
 
 <h3>Items Ordered:</h3>
 
 <ul>
+
 {% for item in items %}
+
 <li>{{ item.name }} - ₹{{ item.price }}</li>
+
 {% endfor %}
+
 </ul>
 
 <h3>Total Amount: ₹{{ total }}</h3>
@@ -13,6 +21,5 @@
 <a href="/menu">
 <button>Order More</button>
 </a>
-<script>
-alert("Order placed successfully! Table is now occupied.");
-</script>
+
+{% endblock %}

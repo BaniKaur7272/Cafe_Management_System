@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Cafe manager customer after login</title>
+    </head>
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+display:flex;
+height:100vh;
+}
+
+.left{
+width:50%;
+background:linear-gradient(135deg,#220e01,#964B00);
+color:white;
+display:flex;
+flex-direction:column;
+justify-content: center;
+
+padding:40px;
+}
+
+.right{
+width:40%;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#f5f5f5;
+}
+
+    
+.btn{
+    color:antiquewhite;
+}
+.btn:hover{
+    color:#000;
+}
+</style>
+<body>
+<div class="left">
+    <p>Choose the option you want to visit ☕</p>
+        <a href="/tables" class="btn">View Tables</a>
+<a href="/menu" class="btn">Order Food</a>
+<a href="/prebook" class="btn">Reserve Table</a>
+
+</div>
+<div class="right">
+    <img src="{{ url_for('static', filename='images/cafe-interior-design.jpg') }}" class="hero-img">
+
+</div>
+</body>
+</html>

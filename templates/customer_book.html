@@ -1,0 +1,23 @@
+<h2>Book Table</h2>
+
+{% for table in tables %}
+
+<div>
+
+Table {{table.table_number}}
+
+{% if table.status == "available" %}
+
+<a href="/book_table/{{table.table_number}}">
+<button>Book Now</button>
+</a>
+
+{% else %}
+
+<span style="color:red">Occupied</span>
+
+{% endif %}
+
+</div>
+
+{% endfor %}

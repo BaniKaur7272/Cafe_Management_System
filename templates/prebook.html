@@ -1,0 +1,32 @@
+<h2>Reserve Table</h2>
+
+<form action="/book_table" method="POST">
+
+<input type="text" name="name" placeholder="Your Name" required>
+
+<input type="text" name="phone" placeholder="Phone Number" required>
+
+<input type="date" name="date" required>
+
+<input type="time" name="time" required>
+
+
+<!-- TABLE SELECT DROPDOWN -->
+<select name="table_number" required>
+
+<option value="">Select Table</option>
+
+{% for table in tables %}
+
+<option value="{{table.table_number}}">
+Table {{table.table_number}}
+</option>
+
+{% endfor %}
+
+</select>
+
+
+<button type="submit">Book Table</button>
+
+</form>
