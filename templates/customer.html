@@ -1,53 +1,87 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Cafe manager customer after login</title>
-    </head>
-<style>
+<head>
+<title>Customer Panel</title>
 
+<style>
 body{
 margin:0;
 font-family:Arial;
-display:flex;
+
+background-image:url("/static/images/coffee1.jpg");
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
 height:100vh;
 }
 
-.left{
-width:50%;
-background:linear-gradient(135deg,#220e01,#964B00);
+.header{
+background:#814141;
 color:white;
-display:flex;
-flex-direction:column;
-justify-content: center;
-
-padding:40px;
+padding:20px;
+text-align:center;
 }
 
-.right{
-width:40%;
+.container{
 display:flex;
 justify-content:center;
-align-items:center;
-background:#f5f5f5;
+gap:30px;
+margin-top:50px;
 }
 
-    
-.btn{
-    color:antiquewhite;
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+text-align:center;
+width:250px;
 }
-.btn:hover{
-    color:#000;
+
+.card a{
+display:inline-block;
+margin-top:10px;
+padding:10px 20px;
+background: #5C4033 ;
+color:white;
+text-decoration:none;
+border-radius:5px;
 }
+
 </style>
-<body>
-<div class="left">
-    <p>Choose the option you want to visit ☕</p>
-        <a href="/tables" class="btn">View Tables</a>
-<a href="/menu" class="btn">Order Food</a>
-<a href="/prebook" class="btn">Reserve Table</a>
+</head>
 
+<body>
+
+
+<div class="header">
+<h1>Customer Panel</h1>
 </div>
-<div class="right">
-    <img src="{{ url_for('static', filename='images/cafe-interior-design.jpg') }}" class="hero-img">
+
+<div class="container">
+
+<div class="card">
+<h2>Menu</h2>
+<p>View food menu</p>
+<a href="/menu">Open Menu</a>
+</div>
+
+<div class="card">
+<h2>Place Order</h2>
+<p>Order food from menu</p>
+<a href="/menu">Order Now</a>
+</div>
+
+<div class="card">
+<h2>Reserve Table</h2>
+<p>Book table in advance</p>
+<a href="/prebook">Reserve</a>
+</div>
+
+<div class="card">
+<h2>Logout</h2>
+<a href="/">Logout</a>
+</div>
 
 </div>
 </body>

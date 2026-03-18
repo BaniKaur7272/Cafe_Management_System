@@ -1,11 +1,77 @@
-<h2>Staff Panel</h2>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Staff Dashboard</title>
 
-<a href="/menu">Take Order</a>
+<style>
+body{
+font-family:Arial;
+background:#f4f6f9;
+margin:0;
+}
 
-<br><br>
+.header{
+background:#220e01;
+color:white;
+padding:20px;
+text-align:center;
+}
 
+.container{
+display:flex;
+justify-content:center;
+gap:30px;
+margin-top:50px;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 4px 10px #341602;
+text-align:center;
+width:250px;
+}
+
+.card a{
+display:inline-block;
+margin-top:10px;
+padding:10px 20px;
+background:#964B00;
+color:white;
+text-decoration:none;
+border-radius:5px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>Staff Dashboard</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+<h2>Orders</h2>
+<p>View customer orders</p>
+<a href="/orders">View Orders</a>
+</div>
+
+<div class="card">
+<h2>Tables</h2>
+<p>Manage table status</p>
 <a href="/tables">View Tables</a>
+</div>
 
-<br><br>
+<div class="card">
+<h2>Logout</h2>
+<a href="/">Logout</a>
+</div>
 
-<a href="/logout">Logout</a>
+</div>
+
+</body>
+</html>

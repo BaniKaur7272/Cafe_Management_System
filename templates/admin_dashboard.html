@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f6f9;
+}
+
+.header{
+    background:#6e2c00;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.container{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    padding:40px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 4px 10px #220e01;
+    text-align:center;
+}
+
+.card a{
+    display:inline-block;
+    margin-top:15px;
+    padding:10px 20px;
+    background:rgb(63, 9, 9);
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
+}
+
+.card a:hover{
+    background:rgb(79, 1, 1);
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h1>Admin Dashboard</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+<h2>Menu</h2>
+<p>Manage food menu</p>
+<a href="/menu">Open</a>
+</div>
+
+<div class="card">
+<h2>Orders</h2>
+<p>View all orders</p>
+<a href="/orders">Open</a>
+</div>
+
+<div class="card">
+<h2>Tables</h2>
+<p>Manage tables</p>
+<a href="/tables">Open</a>
+</div>
+
+<div class="card">
+<h2>Staff Dashboard</h2>
+<p>View staff panel</p>
+<a href="/staff_dashboard">Open</a>
+</div>
+
+<div class="card">
+<h2>Customer View</h2>
+<p>See customer menu</p>
+<a href="/menu">Open</a>
+</div>
+
+<div class="card">
+<h2

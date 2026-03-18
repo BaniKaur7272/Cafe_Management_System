@@ -78,9 +78,40 @@ width:100%;
 border-radius:8px;
 cursor:pointer;
 }
+.alert{
+background:#2ecc71;
+color:white;
+padding:15px;
+margin:20px;
+border-radius:8px;
+font-size:18px;
+text-align:center;
+}
+.reservation-info{
+background:#fff3cd;
+padding:15px;
+margin:15px;
+border-radius:8px;
+font-size:18px;
+}
 
 </style>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
 
+<div class="alert">
+{{ messages[0] }}
+</div>
+
+{% endif %}
+{% endwith %}
+<div class="reservation-info">
+
+<h3>Welcome {{ session['customer_name'] }}</h3>
+
+<p>Your reserved table: <b>{{ session['table_number'] }}</b></p>
+
+</div>
 
 <div class="page">
 

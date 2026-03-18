@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Create Account</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+display:flex;
+height:100vh;
+}
+
+.left{
+flex:1;
+background:linear-gradient(135deg,#220e01,#6e2c00,#964B00);
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+.right{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#f5f6fa;
+}
+
+.form-box{
+width:350px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:12px;
+background:rgb(63, 3, 3);
+border:none;
+color:white;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:rgb(50, 6, 6);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="left">
+
+<img src="{{ url_for('static', filename='images/cafe1.jpg') }}" class="hero-img">
+
+
+<h1>Join Cafe Manager</h1>
+
+<p>Create your account to manage orders and tables</p>
+
+</div>
+
+<div class="right">
+
+<div class="form-box">
+
+<h2>Create Account</h2>
+
+<form method="POST" action="/signup">
+
+<input type="text" name="name" placeholder="Full Name" required>
+
+<input type="email" name="email" placeholder="Email Address" required>
+
+<input type="password" name="password" placeholder="Password" required>
+
+<select name="role">
+
+<option value="customer">Customer 👤</option>
+
+<option value="staff">Staff 🧑‍🍳</option>
+
+<option value="admin">Admin 🛠</option>
+
+</select>
+
+<button type="submit">Create Account</button>
+
+</form>
+
+<p>Already have an account? <a href="/login">login</a></p>
+
+</div>
+
+</div>
+
+</body>
+</html>
