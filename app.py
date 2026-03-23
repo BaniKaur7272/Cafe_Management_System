@@ -1,12 +1,17 @@
 from flask import Flask, render_template, request, redirect, session, jsonify,flash
 from flask_sqlalchemy import SQLAlchemy 
+import os
+from dotenv import load_dotenv
 import json
 from datetime import datetime
 
-app = Flask(__name__)
-app.secret_key = "secret123"
+# LOAD ENV VARIABLES
+load_dotenv()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bani@localhost/cafe_db'
+app = Flask(__name__)
+app.secret_key = os.getenv("mysecretkey")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -21,7 +26,7 @@ db = SQLAlchemy(app)
 # -----------------------
 
 class User(db.Model):
-    _tablename_="users"
+    __tablename__="users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
@@ -63,17 +68,11 @@ class Order(db.Model):
     total= db.Column(db.Integer)
 
 class TableBooking(db.Model):
-
     id = db.Column(db.Integer, primary_key=True)
-
     name = db.Column(db.String(100))
-
     phone = db.Column(db.String(20))
-
     table_number = db.Column(db.Integer)
-
     date = db.Column(db.String(20))
-
     time = db.Column(db.String(20))
 
 
@@ -81,10 +80,10 @@ class TableBooking(db.Model):
 # -----------------------------
 # CREATE TABLES
 # -----------------------------
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
-# 🔹 Reservation auto-check
+#  Reservation auto-check
 @app.before_request
 def check_reservations():
 
@@ -167,7 +166,6 @@ def login():
             session["user_id"] = user.id
             session["user_role"] = user.role
 
-            # ⭐ YAHI ADD KARNA HAI
             if user.role == "admin":
                 return redirect("/dashboard")
 
@@ -242,7 +240,7 @@ def tables():
     tables = Tables.query.all()
     print("TABLES:", tables)  
     return render_template("tables.html", tables=tables)
-import ast
+# import ast
 
 @app.route("/place_order", methods=["POST"])
 def place_order():
@@ -277,7 +275,7 @@ def order_success():
 def add_to_cart():
 
     item_id = request.form.get("item_id")
-    item = MenuItem.query.get(item_id)
+    item = MenuItem.query.get_or_404(item_id)
 
     if "cart" not in session:
         session["cart"] = []
@@ -305,7 +303,7 @@ def free_table(table_number):
 
 
 
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 
 @app.route("/book_table", methods=["POST"])
 def book_table():
@@ -314,7 +312,7 @@ def book_table():
     phone = request.form["phone"]
     date = request.form["date"]
     time = request.form["time"]
-    table_number = request.form["table_number"]
+    table_number = int(request.form["table_number"])
 
     table = Tables.query.filter_by(table_number=table_number).first()
 
@@ -392,8 +390,8 @@ def staff_dashboard():
 # -----------------------------
 # RUN SERVER
 # -----------------------------
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 with app.app_context():
 
