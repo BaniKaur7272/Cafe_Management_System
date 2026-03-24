@@ -1,3 +1,11 @@
+CREATE TABLE users(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(120) UNIQUE,
+    password VARCHAR(200),
+    role VARCHAR(20)
+);
+
 CREATE TABLE menu_items(
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),

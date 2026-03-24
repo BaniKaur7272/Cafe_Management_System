@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import json
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # LOAD ENV VARIABLES
 load_dotenv()
@@ -29,8 +30,8 @@ class User(db.Model):
     __tablename__="users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    email = db.Column(db.String(100))
-    password = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(255))
     role = db.Column(db.String(20))
 
 
@@ -106,26 +107,7 @@ def check_reservations():
 # -----------------------------
 @app.route("/", methods=["GET","POST"])
 def home():
-
-    if request.method == "POST":
-
-        role = request.form.get("role")
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        if role == "admin" and email == "admin@cafe.com" and password == "admin123":
-            return redirect("/admin_dashboard")
-
-        elif role == "staff" and email == "staff@cafe.com" and password == "staff123":
-            return redirect("/staff_dashboard")
-
-        elif role == "customer" and email == "customer@cafe.com" and password == "cust123":
-            return redirect("/customer")
-
-        else:
-            return "Invalid Login"
-
-    return render_template("login.html")
+    return redirect("/login")
 
 @app.route("/signup", methods=["GET","POST"])
 def signup():
@@ -134,9 +116,13 @@ def signup():
 
         name = request.form["name"]
         email = request.form["email"]
-        password = request.form["password"]
+        password = generate_password_hash(request.form["password"])
         role = request.form["role"]
 
+        # prevent admin signup
+        if role == "admin":
+            return "Admin accounts cannot be created from signup"
+        
         user = User(
             name=name,
             email=email,
@@ -147,6 +133,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
 
+        flash("Account created. Please login.")
         return redirect("/login")
 
     return render_template("signup.html")
@@ -158,11 +145,24 @@ def login():
 
         email = request.form["email"]
         password = request.form["password"]
+        selected_role = request.form["role"]
 
-        user = User.query.filter_by(email=email, password=password).first()
+        # hardcoded admin login
+        if email == "admin@cafe.com" and password == "admin123":
+            session["user_role"] = "admin"
+            session["user_name"] = "Admin"
+            return redirect("/admin_dashboard")
+        
+        # database login for staff and customer
+        user = User.query.filter_by(email=email).first()
 
-        if user:
+        if user and check_password_hash(user.password, password):
 
+            # role validation
+            if user.role != selected_role:
+                flash("You selected wrong role")
+                return redirect("/login")
+            
             session["user_id"] = user.id
             session["user_role"] = user.role
 
@@ -173,9 +173,10 @@ def login():
                 return redirect("/staff_dashboard")
 
             else:
-                return redirect("/menu")
+                return redirect("/customer")
 
         else:
+            flash("Invalid email or password")
             return "Invalid login"
 
     return render_template("login.html")
@@ -361,10 +362,8 @@ def book_table():
     return "<script>alert('Table Booked Successfully');window.location='/'</script>" '''
 @app.route('/logout')
 def logout():
-
     session.clear()
-
-    return redirect("/")
+    return redirect("/login")
 
 
 
@@ -394,7 +393,7 @@ def staff_dashboard():
 #     db.create_all()
 
 with app.app_context():
-
+    db.create_all()
     if Tables.query.count() == 0:
 
         for i in range(1,11):
