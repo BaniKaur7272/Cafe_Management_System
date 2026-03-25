@@ -188,15 +188,8 @@ def login():
 
 @app.route("/admin_dashboard")
 def admin_dashboard():
-
-    orders = Order.query.all()
     tables = Tables.query.all()
-
-    return render_template(
-        "admin_dashboard.html",
-        orders=orders,
-        tables=tables
-    )
+    return render_template("admin_dashboard.html", tables=tables)
 
 @app.route("/customer")
 def customer():
@@ -462,8 +455,10 @@ def logout():
 
 @app.route('/orders')
 def orders():
-
-    orders = Order.query.all()
+    orders = Order.query.order_by(Order.id.desc()).all()
+    
+    for order in orders:
+        order.items = json.loads(order.items)
 
     return render_template("orders.html", orders=orders)
 
