@@ -1,10 +1,104 @@
-<h2>Orders</h2>
+<!DOCTYPE html>
+<html lang="en">
 
-{% for order in orders %}
+<head>
+    <meta charset="UTF-8">
+    <title>Orders - Admin</title>
 
-<p>
-Table {{order.table_number}} -
-₹{{order.total_price}}
-</p>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
 
-{% endfor %}
+        .header {
+            background: #6e2c00;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 10px #220e01;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #6e2c00;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .back-btn {
+            margin: 20px 40px;
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            background: #6e2c00;
+            padding: 8px 14px;
+            border-radius: 5px;
+        }
+
+        .back-btn:hover {
+            background: #793202;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Order History</h1>
+    </div>
+
+    <a class="back-btn" href="{{ url_for('admin_dashboard') }}">← Back to Dashboard</a>
+
+    <div class="container">
+
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Table</th>
+                <th>Items</th>
+                <th>Total (₹)</th>
+            </tr>
+
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.table_number }}</td>
+
+                <td>
+                    <ul>
+                        {% for item in order.items %}
+                        <li>{{ item.name }} - ₹{{ item.price }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+
+                <td>₹{{ order.total }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+</body>
+
+</html>
