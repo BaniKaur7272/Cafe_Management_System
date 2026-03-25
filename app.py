@@ -1,16 +1,21 @@
-from flask import Flask, render_template, request, redirect, session, jsonify,flash
+from flask import Flask, render_template, request, redirect, session, jsonify,flash, url_for
 from flask_sqlalchemy import SQLAlchemy 
 import os
 from dotenv import load_dotenv
 import json
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 # LOAD ENV VARIABLES
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("mysecretkey")
+
+UPLOAD_FOLDER = "static/uploads"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -214,6 +219,93 @@ def menu():
         total=total
     
     )
+    
+# admin dashboard
+@app.route("/admin/menu")
+def admin_menu():
+    # if session.get("role") != "admin":
+    #     return redirect(url_for("login"))
+
+    items = MenuItem.query.all()
+    return render_template("admin_menu.html", items=items)
+
+@app.route("/admin/add_item", methods=["GET", "POST"])
+def add_item():
+    if request.method == "POST":
+        name = request.form["name"]
+        category = request.form["category"]
+        price = request.form["price"]
+        stock = request.form["stock"]
+        
+        image_file = request.files.get("image")
+
+        # if no image provided, use default
+        if image_file and image_file.filename != "":
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], image_file.filename)
+            image_file.save(filepath)
+            image = image_file.filename
+        else:
+            image = "default.jpg"
+        
+        new_item = MenuItem(
+            name=name,
+            category=category,
+            price=price,
+            stock=stock,
+            image=image
+        )
+
+        db.session.add(new_item)
+        db.session.commit()
+
+        return redirect(url_for("admin_menu"))
+
+    return render_template("add_item.html", item=None)
+
+@app.route("/admin/edit_item/<int:item_id>", methods=["GET", "POST"])
+def edit_item(item_id):
+    item = MenuItem.query.get_or_404(item_id)
+
+    if request.method == "POST":
+        item.name = request.form["name"]
+        item.category = request.form["category"]
+        item.price = request.form["price"]
+        item.stock = request.form["stock"]
+
+        # check if admin selected default image
+        if "use_default" in request.form:
+            item.image = "default.jpg"
+
+        else:
+            image_file = request.files.get("image")
+
+            if image_file and image_file.filename != "":
+                filename = secure_filename(image_file.filename)
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                image_file.save(filepath)
+                item.image = filename
+
+        db.session.commit()
+        return redirect(url_for("admin_menu"))
+
+    return render_template("edit_item.html", item=item)
+
+@app.route("/admin/delete_item/<int:item_id>")
+def delete_item(item_id):
+    # if session.get("role") != "admin":
+    #     return redirect(url_for("login"))
+
+    item = MenuItem.query.get_or_404(item_id)
+    db.session.delete(item)
+    db.session.commit()
+
+    return redirect(url_for("admin_menu"))
+
+@app.route("/reports")
+def reports():
+    if session.get("role") != "admin":
+        return redirect(url_for("login"))
+    return render_template("reports.html")
 
 @app.route("/prebook")
 def prebook():

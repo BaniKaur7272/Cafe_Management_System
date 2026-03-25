@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Menu Item</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .header {
+            background: #6e2c00;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .form-container {
+            width: 400px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px;
+        }
+
+        button {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1b5e20;
+        }
+
+        .back {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h2>Add New Menu Item</h2>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+
+            <label>Item Name</label>
+            <input type="text" name="name" required>
+
+            <label>Category</label>
+            <select name="category">
+                <option>Beverage</option>
+                <option>Snacks</option>
+                <option>Main Course</option>
+                <option>Dessert</option>
+            </select>
+
+            <label>Price</label>
+            <input type="number" name="price" required>
+
+            <label>Stock</label>
+            <input type="number" name="stock" required>
+
+            <label>Add Image</label>
+            <!-- <input type="text" name="image" value="{{ item.image if item else '' }}" placeholder="e.g. coffee.jpg"> -->
+            <input type="file" name="image">
+            
+            <button type="submit">Add Item</button>
+        </form>
+
+        <a class="back" href="{{ url_for('admin_menu') }}">← Back to Menu</a>
+    </div>
+
+</body>
+
+</html>
