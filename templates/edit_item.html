@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Menu Item</title>
+</head>
+
+<body>
+
+    <h2>Edit Item</h2>
+
+    <form method="POST">
+        <label>Name</label>
+        <input type="text" name="name" value="{{ item.name }}" required><br><br>
+
+        <label>Category</label>
+        <input type="text" name="category" value="{{ item.category }}"><br><br>
+
+        <label>Price</label>
+        <input type="number" name="price" value="{{ item.price }}"><br><br>
+
+        <label>Stock</label>
+        <input type="number" name="stock" value="{{ item.stock }}"><br><br>
+
+        <label>Image</label>
+        <input type="text" name="image" value="{{ item.image }}"><br><br>
+
+        <button type="submit">Update Item</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('admin_menu') }}">Back</a>
+
+</body>
+
+</html>
