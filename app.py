@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import json
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 # LOAD ENV VARIABLES
 load_dotenv()
@@ -270,12 +271,19 @@ def edit_item(item_id):
         item.category = request.form["category"]
         item.price = request.form["price"]
         item.stock = request.form["stock"]
-        image_file = request.files.get("image")
-        
-        if image_file and image_file.filename != "":
-            filepath = os.path.join(app.config["UPLOAD_FOLDER"], image_file.filename)
-            image_file.save(filepath)
-            item.image = image_file.filename
+
+        # check if admin selected default image
+        if "use_default" in request.form:
+            item.image = "default.jpg"
+
+        else:
+            image_file = request.files.get("image")
+
+            if image_file and image_file.filename != "":
+                filename = secure_filename(image_file.filename)
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                image_file.save(filepath)
+                item.image = filename
 
         db.session.commit()
         return redirect(url_for("admin_menu"))
