@@ -294,6 +294,44 @@ def delete_item(item_id):
 
     return redirect(url_for("admin_menu"))
 
+@app.route("/add_table", methods=["POST"])
+def add_table():
+    number = request.form["table_number"]
+
+    new_table = Tables(
+        table_number=number,
+        status="available"
+    )
+
+    db.session.add(new_table)
+    db.session.commit()
+
+    return redirect("/tables")
+
+@app.route("/toggle_table/<int:table_number>", methods=["POST"])
+def toggle_table(table_number):
+
+    table = Tables.query.filter_by(table_number=table_number).first()
+
+    if table.status == "available":
+        table.status = "unavailable"
+    else:
+        table.status = "available"
+
+    db.session.commit()
+    return redirect("/tables")
+
+@app.route("/delete_table/<int:table_number>", methods=["POST"])
+def delete_table(table_number):
+
+    table = Tables.query.filter_by(table_number=table_number).first()
+
+    if table:
+        db.session.delete(table)
+        db.session.commit()
+
+    return redirect("/tables")
+
 @app.route("/reports")
 def reports():
     if session.get("role") != "admin":

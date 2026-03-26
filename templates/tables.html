@@ -1,84 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <title>Table Management</title>
 
-<title>Tables</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
 
-<style>
+        .header {
+            background: #6e2c00;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
 
-body{
-font-family:Arial;
-text-align:center;
-}
+        .container {
+            padding: 30px 50px;
+        }
 
-.table-grid{
-display:grid;
-grid-template-columns:repeat(4,150px);
-gap:20px;
-justify-content:center;
-margin-top:40px;
-}
+        .add-table {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
 
-.table-card{
-padding:30px;
-border-radius:10px;
-font-weight:bold;
-color:white;
-}
+        .add-table input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 250px;
+        }
 
-.available{
-background:#2ecc71;
-}
+        .add-table button {
+            background: #6e2c00;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-.occupied{
-background:#e74c3c;
-}
+        .add-table button:hover {
+            background: #7c3b10;
+        }
 
-a{
-color:white;
-text-decoration:none;
-}
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
 
-</style>
+        .table-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
 
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .available {
+            background: #e6f6ec;
+            color: #2ecc71;
+        }
+
+        .unavailable {
+            background: #fdeaea;
+            color: #e74c3c;
+        }
+
+        .reserved {
+            background: #fff3cd;
+            color: #d4a017;
+        }
+
+        .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions button {
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: #f7f7f7;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background: #ececec;
+        }
+
+        .delete-btn {
+            background: #ffe6e6;
+            color: #c0392b;
+            border: 1px solid #e0a0a0;
+        }
+
+        .delete-btn:hover {
+            background: #ffcccc;
+        }
+
+        .back-btn {
+            margin: 20px 40px;
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            background: #6e2c00;
+            padding: 8px 14px;
+            border-radius: 5px;
+        }
+
+        .back-btn:hover {
+            background: #793202;
+        }
+    </style>
 </head>
 
 <body>
 
-<h1>Cafe Tables</h1>
+    <div class="header">
+        <h1>Table Management</h1>
+    </div>
 
-<div class="table-grid">
+    <a class="back-btn" href="{{ url_for('login') }}">← Back to Login</a>
 
-{% for table in tables %}
+    <div class="container">
 
-<div class="table-card {% if table.status=='available' %}available{% else %}occupied{% endif %}">
+        <!-- Add Table -->
+        <form class="add-table" method="post" action="/add_table">
+            <input type="number" name="table_number" placeholder="Table number (e.g. 7)" required>
+            <button type="submit">+ Add Table</button>
+        </form>
 
-Table {{table.table_number}}
+        <!-- Table Cards -->
+        <div class="table-grid">
 
-<br><br>
+            {% for table in tables %}
+            <div class="table-card">
 
-{% if table.status=="available" %}
+                <div class="table-header">
+                    <div class="table-title">Table {{ table.table_number }}</div>
 
-<a href="/book_table/{{table.table_number}}">
-Book Table
-</a>
-{% elif table.status == "occupied" %}
+                    <div class="status {{ table.status }}">
+                        {{ table.status }}
+                    </div>
+                </div>
 
-<a href="/free_table/{{table.table_number}}">
-<button>Free Table</button>
-</a>
+                <div class="actions">
 
-{% else %}
+                    <!-- Toggle -->
+                    <form action="/toggle_table/{{ table.table_number }}" method="post">
+                        <button type="submit">
+                            {% if table.status == "available" %}
+                            Set Unavailable
+                            {% else %}
+                            Set Available
+                            {% endif %}
+                        </button>
+                    </form>
 
-Occupied
+                    <!-- Delete -->
+                    <form action="/delete_table/{{ table.table_number }}" method="post"
+                        onsubmit="return confirm('Delete this table permanently?');">
+                        <button type="submit" class="delete-btn">
+                            Delete
+                        </button>
+                    </form>
 
-{% endif %}
+                </div>
 
-</div>
+            </div>
+            {% endfor %}
 
-{% endfor %}
+        </div>
 
-</div>
+    </div>
 
 </body>
+
 </html>
