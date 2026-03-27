@@ -525,6 +525,14 @@ def update_order(order_id, status):
     db.session.commit()
     return redirect("/staff_dashboard")
 
+@app.route("/staff_tables")
+def staff_tables():
+    if session.get("user_role") != "staff":
+        return redirect("/login")
+
+    tables = Tables.query.order_by(Tables.table_number).all()
+    return render_template("staff_tables.html", tables=tables)
+
 # -----------------------------
 # RUN SERVER
 # -----------------------------

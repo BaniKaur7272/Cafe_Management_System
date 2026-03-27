@@ -48,27 +48,23 @@
         }
 
         .navbar {
-            background: #fff;
-            padding: 12px 20px;
-            display: flex;
-            gap: 20px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar a {
-            text-decoration: none;
-            color: #6e2c00;
-            font-weight: bold;
-        }
-
-        .navbar a:hover {
-            text-decoration: underline;
-        }
-
-        .logout {
-            margin-left: auto;
-            color: red;
-        }
+                background: #fff;
+                padding: 12px 20px;
+                display: flex;
+                gap: 20px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+    
+            .navbar a {
+                text-decoration: none;
+                color: #6e2c00;
+                font-weight: bold;
+            }
+    
+            .logout {
+                margin-left: auto;
+                color: red;
+            }
     </style>
 </head>
 
@@ -79,10 +75,11 @@
     </div>
 
     <div class="navbar">
-        <a href="/logout" style="color:#964B00;">Logout</a>
-        <a href="" style="color:#964B00;">Table Bookings</a>
-
+        <a href="/staff_dashboard">Orders</a>
+        <a href="/staff_tables" class="active">Table Status</a>
+        <a href="/logout" class="logout">Logout</a>
     </div>
+
     <div class="section">
         <div class="order-container">
 
