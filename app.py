@@ -72,6 +72,7 @@ class Order(db.Model):
     table_number = db.Column(db.Integer)
     items = db.Column(db.Text)
     total= db.Column(db.Integer)
+    status = db.Column(db.String(20), default="pending")
 
 class TableBooking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -509,7 +510,20 @@ def customer_book():
 
 @app.route("/staff_dashboard")
 def staff_dashboard():
-    return render_template("staff_dashboard.html")
+    orders = Order.query.order_by(Order.id.desc()).all()
+
+    # convert JSON string to list
+    for order in orders:
+        order.items = json.loads(order.items)
+
+    return render_template("staff_dashboard.html", orders=orders)
+
+@app.route("/update_order/<int:order_id>/<status>")
+def update_order(order_id, status):
+    order = Order.query.get_or_404(order_id)
+    order.status = status
+    db.session.commit()
+    return redirect("/staff_dashboard")
 
 # -----------------------------
 # RUN SERVER
