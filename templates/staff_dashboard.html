@@ -1,77 +1,159 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Staff Dashboard</title>
+    <title>Staff Dashboard</title>
 
-<style>
-body{
-font-family:Arial;
-background:#f4f6f9;
-margin:0;
-}
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            margin: 0;
+        }
 
-.header{
-background:#220e01;
-color:white;
-padding:20px;
-text-align:center;
-}
+        .header {
+            background: #6e2c00;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
 
-.container{
-display:flex;
-justify-content:center;
-gap:30px;
-margin-top:50px;
-}
+        .section {
+            padding: 20px;
+        }
 
-.card{
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 4px 10px #341602;
-text-align:center;
-width:250px;
-}
+        .order-container {
+            display: flex;
+            gap: 20px;
+        }
 
-.card a{
-display:inline-block;
-margin-top:10px;
-padding:10px 20px;
-background:#964B00;
-color:white;
-text-decoration:none;
-border-radius:5px;
-}
+        .column {
+            flex: 1;
+        }
 
-</style>
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px #ddd;
+        }
+
+        button {
+            background: #964B00;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .navbar {
+                background: #fff;
+                padding: 12px 20px;
+                display: flex;
+                gap: 20px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+    
+            .navbar a {
+                text-decoration: none;
+                color: #6e2c00;
+                font-weight: bold;
+            }
+    
+            .logout {
+                margin-left: auto;
+                color: red;
+            }
+    </style>
 </head>
 
 <body>
 
-<div class="header">
-<h1>Staff Dashboard</h1>
-</div>
+    <div class="header">
+        <h1>Staff Dashboard</h1>
+    </div>
 
-<div class="container">
+    <div class="navbar">
+        <a href="/staff_dashboard">Orders</a>
+        <a href="/staff_tables" class="active">Table Status</a>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
 
-<div class="card">
-<h2>Orders</h2>
-<p>View customer orders</p>
-<a href="/orders">View Orders</a>
-</div>
+    <div class="section">
+        <div class="order-container">
 
-<div class="card">
-<h2>Tables</h2>
-<p>Manage table status</p>
-<a href="/tables">View Tables</a>
-</div>
+            <!-- Pending -->
+            <div class="column">
+                <h3>Pending</h3>
+                {% for order in orders if order.status == "pending" %}
+                <div class="card">
+                    <p><b>Order #{{order.id}}</b></p>
+                    <p>Table: {{order.table_number}}</p>
 
-<div class="card">
-<h2>Logout</h2>
-<a href="/">Logout</a>
-</div>
+                    <ul>
+                        {% for item in order.items %}
+                        <li>{{item.name}} - ₹{{item.price}}</li>
+                        {% endfor %}
+                    </ul>
 
-</div>
+                    <p>Total: ₹{{order.total}}</p>
+
+                    <a href="/update_order/{{order.id}}/preparing">
+                        <button>Start Preparing</button>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Preparing -->
+            <div class="column">
+                <h3>Preparing</h3>
+                {% for order in orders if order.status == "preparing" %}
+                <div class="card">
+                    <p><b>Order #{{order.id}}</b></p>
+                    <p>Table: {{order.table_number}}</p>
+
+                    <ul>
+                        {% for item in order.items %}
+                        <li>{{item.name}}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <a href="/update_order/{{order.id}}/ready">
+                        <button>Mark Ready</button>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Ready -->
+            <div class="column">
+                <h3>Ready</h3>
+                {% for order in orders if order.status == "ready" %}
+                <div class="card">
+                    <p><b>Order #{{order.id}}</b></p>
+                    <p>Table: {{order.table_number}}</p>
+
+                    <a href="/update_order/{{order.id}}/delivered">
+                        <button>Mark Delivered</button>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+        <h3>Completed Today</h3>
+
+        {% for order in orders if order.status == "delivered" %}
+        <div class="card">
+            Order #{{order.id}} - ₹{{order.total}} (Delivered)
+        </div>
+        {% endfor %}
+
+    </div>
 
 </body>
+
 </html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kitchen Orders</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        table {
+            width: 95%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #6e2c00;
+            color: white;
+        }
+
+        button {
+            padding: 5px 10px;
+            background: #964B00;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 style="text-align:center;">Live Order Queue</h2>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Table</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Update</th>
+            <th>Bill</th>
+        </tr>
+
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.table_number }}</td>
+
+            <td>
+                {% for item in order.items %}
+                {{ item.name }} - ₹{{ item.price }}<br>
+                {% endfor %}
+            </td>
+
+            <td>₹{{ order.total }}</td>
+            <td>{{ order.status }}</td>
+
+            <td>
+                <form action="/update_order/{{ order.id }}" method="post">
+                    <select name="status">
+                        <option value="pending">Pending</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="served">Served</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+
+            <td>
+                <a href="/generate_bill/{{ order.id }}">
+                    <button>Bill</button>
+                </a>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+
+</html>

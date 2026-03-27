@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!DOCTYPE html>
+    <html>
+    
+    <head>
+        <title>Table Status</title>
+    
+        <style>
+            body {
+                font-family: Arial;
+                background: #f4f6f9;
+                margin: 0;
+            }
+    
+            .header {
+                background: #6e2c00;
+                color: white;
+                padding: 20px;
+                text-align: center;
+            }
+    
+            .navbar {
+                background: #fff;
+                padding: 12px 20px;
+                display: flex;
+                gap: 20px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+    
+            .navbar a {
+                text-decoration: none;
+                color: #6e2c00;
+                font-weight: bold;
+            }
+    
+            .logout {
+                margin-left: auto;
+                color: red;
+            }
+    
+            .container {
+                padding: 20px;
+            }
+    
+            .table-card {
+                background: white;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px #ddd;
+            }
+    
+            .available {
+                border-left: 6px solid green;
+            }
+    
+            .reserved {
+                border-left: 6px solid orange;
+            }
+    
+            .unavailable {
+                border-left: 6px solid red;
+            }
+        </style>
+    </head>
+    
+    <body>
+    
+        <div class="header">
+            <h2>Table Status</h2>
+        </div>
+    
+        <div class="navbar">
+            <a href="/staff_dashboard">Orders</a>
+            <a href="/staff_tables" class="active">Table Status</a>
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+    
+        <div class="container">
+    
+            {% for table in tables %}
+            <div class="table-card {{ table.status }}">
+                <h3>Table {{ table.table_number }}</h3>
+                <p>Status: <b>{{ table.status }}</b></p>
+    
+                {% if table.status == "reserved" %}
+                <p>Reserved by: {{ table.reserved_by }}</p>
+                <p>Until: {{ table.reserved_until }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+    
+        </div>
+    </body>
+</html>
