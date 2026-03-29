@@ -1,88 +1,1218 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Customer Panel</title>
+    <title>Customer Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
 
-<style>
-body{
-margin:0;
-font-family:Arial;
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-background-image:url("/static/images/coffee1.jpg");
-background-size:cover;
-background-position:center;
-background-repeat:no-repeat;
-height:100vh;
-}
+        :root {
+            --brown-deep: #4a2510;
+            --brown-mid: #6b3e26;
+            --brown-warm: #8c5230;
+            --orange: #e07a2f;
+            --orange-lt: #f5a35a;
+            --cream: #faf6f1;
+            --cream-dark: #f0e9df;
+            --text: #2c1a0e;
+            --text-soft: #7a5c45;
+            --green: #3d8c5c;
+            --green-lt: #d4edd9;
+            --red: #c0392b;
+        }
 
-.header{
-background:#814141;
-color:white;
-padding:20px;
-text-align:center;
-}
+        body {
+            margin: 0;
+            font-family: 'DM Sans', Arial, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+        }
 
-.container{
-display:flex;
-justify-content:center;
-gap:30px;
-margin-top:50px;
-}
+        /* ── NAVBAR ── */
+        .navbar {
+            background: var(--brown-deep);
+            padding: 0 28px;
+            height: 62px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .28);
+        }
 
-.card{
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-text-align:center;
-width:250px;
-}
+        .navbar h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: .02em;
+        }
 
-.card a{
-display:inline-block;
-margin-top:10px;
-padding:10px 20px;
-background: #5C4033 ;
-color:white;
-text-decoration:none;
-border-radius:5px;
-}
+        .nav-links a {
+            color: rgba(255, 255, 255, .82);
+            margin-left: 24px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: .87rem;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color .2s;
+        }
 
-</style>
+        .nav-links a:hover {
+            color: var(--orange-lt);
+        }
+
+        /* ── NAVBAR CART ── */
+        .nav-cart {
+            position: relative;
+            margin-left: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-cart-icon {
+            font-size: 1.3rem;
+            line-height: 1;
+            transition: transform .2s;
+        }
+
+        .nav-cart:hover .nav-cart-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--orange);
+            color: white;
+            font-size: .68rem;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity .2s, transform .2s;
+        }
+
+        .nav-cart-badge.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ── CART DROPDOWN ── */
+        .cart-dropdown {
+            position: absolute;
+            top: calc(100% + 14px);
+            right: 0;
+            width: 360px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 36px rgba(0, 0, 0, .18);
+            padding: 0;
+            z-index: 999;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px);
+            transition: opacity .22s, transform .22s;
+        }
+
+        .cart-dropdown.open {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .cart-dropdown-header {
+            background: var(--brown-deep);
+            padding: 14px 18px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-dropdown-close {
+            cursor: pointer;
+            font-size: 1.1rem;
+            opacity: .7;
+            transition: opacity .15s;
+            background: none;
+            border: none;
+            color: white;
+            line-height: 1;
+        }
+
+        .cart-dropdown-close:hover {
+            opacity: 1;
+        }
+
+        .cart-dropdown-body {
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 10px 18px;
+        }
+
+        .cart-dropdown-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .cart-dropdown-body::-webkit-scrollbar-thumb {
+            background: var(--cream-dark);
+            border-radius: 4px;
+        }
+
+        .cart-drop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--cream-dark);
+            font-size: .88rem;
+            color: var(--text);
+        }
+
+        .cart-drop-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-drop-name {
+            font-weight: 500;
+        }
+
+        .cart-drop-qty {
+            font-size: .78rem;
+            color: var(--text-soft);
+        }
+
+        .cart-drop-price {
+            font-weight: 600;
+            color: var(--brown-warm);
+        }
+
+        .cart-drop-empty {
+            padding: 20px 0;
+            text-align: center;
+            color: var(--text-soft);
+            font-size: .88rem;
+            font-style: italic;
+        }
+
+        .cart-dropdown-footer {
+            padding: 12px 18px;
+            border-top: 2px solid var(--cream-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-drop-total-label {
+            font-size: .82rem;
+            color: var(--text-soft);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .cart-drop-total-amt {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--brown-deep);
+        }
+
+        /* ── TABLE PICKER inside dropdown ── */
+        .drop-table-section {
+            padding: 12px 18px 4px;
+            border-top: 2px solid var(--cream-dark);
+        }
+
+        .drop-table-label {
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--text-soft);
+            margin-bottom: 10px;
+        }
+
+        .drop-table-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 10px;
+        }
+
+        .drop-table-btn {
+            padding: 6px 13px;
+            border-radius: 7px;
+            border: 1.5px solid var(--cream-dark);
+            background: var(--cream);
+            color: var(--brown-mid);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color .15s, background .15s, color .15s, transform .1s;
+        }
+
+        .drop-table-btn:hover {
+            border-color: var(--orange);
+            background: #fff5ed;
+        }
+
+        .drop-table-btn.selected {
+            background: var(--brown-mid);
+            border-color: var(--brown-mid);
+            color: white;
+            transform: scale(1.06);
+        }
+
+        .drop-table-btn.unavailable {
+            opacity: .38;
+            cursor: not-allowed;
+            pointer-events: none;
+            text-decoration: line-through;
+        }
+
+        .drop-selected-notice {
+            font-size: .78rem;
+            color: var(--green);
+            font-weight: 500;
+            margin-bottom: 8px;
+            min-height: 18px;
+        }
+
+        /* ── PLACE ORDER btn inside dropdown ── */
+        .drop-order-btn {
+            display: block;
+            margin: 0 18px 16px;
+            padding: 12px;
+            background: var(--brown-mid);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .92rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background .2s, transform .15s, box-shadow .2s;
+            width: calc(100% - 36px);
+            box-shadow: 0 4px 12px rgba(107, 62, 38, .22);
+            letter-spacing: .02em;
+        }
+
+        .drop-order-btn:hover:not(:disabled) {
+            background: var(--brown-warm);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(107, 62, 38, .32);
+        }
+
+        .drop-order-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ── PAGE ── */
+        .container {
+            padding: 28px 24px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--brown-deep);
+            margin-bottom: 6px;
+        }
+
+        .section-sub {
+            font-size: .88rem;
+            color: var(--text-soft);
+            margin-bottom: 22px;
+        }
+
+        /* ── MENU GRID ── */
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 36px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 3px 14px rgba(74, 37, 16, .10);
+            overflow: hidden;
+            text-align: center;
+            transition: transform .2s, box-shadow .2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(74, 37, 16, .16);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .menu-card-body {
+            padding: 14px 14px 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .menu-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: var(--brown-deep);
+            margin: 0;
+        }
+
+        .menu-card .category {
+            font-size: .78rem;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .menu-card .price {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--brown-warm);
+            margin-top: 4px;
+        }
+
+        .menu-card .stock {
+            font-size: .78rem;
+            color: #aaa;
+        }
+
+        /* ── QTY CONTROLS ── */
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--brown-mid);
+            background: white;
+            color: var(--brown-mid);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s, color .15s, transform .1s;
+            line-height: 1;
+        }
+
+        .qty-btn:hover {
+            background: var(--brown-mid);
+            color: white;
+        }
+
+        .qty-btn:active {
+            transform: scale(.9);
+        }
+
+        .qty-display {
+            font-size: 1rem;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+            color: var(--brown-deep);
+        }
+
+        /* ── BOOKING SECTION ── */
+        .booking-card {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(74, 37, 16, .12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--brown-mid), var(--orange));
+        }
+
+        /* ── MY BOOKING BANNER ── */
+        .my-booking-banner {
+            max-width: 700px;
+            margin: 0 auto 24px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(74, 37, 16, .10);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .my-booking-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green), #5cb87a);
+        }
+
+        .my-booking-inner {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 22px;
+        }
+
+        .my-booking-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--green-lt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .my-booking-content {
+            flex: 1;
+        }
+
+        .my-booking-label {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            color: var(--green);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .my-booking-msg {
+            font-size: .95rem;
+            color: var(--text);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .my-booking-msg strong {
+            color: var(--brown-deep);
+        }
+
+        .my-booking-meta {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .my-booking-chip {
+            background: var(--cream-dark);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: .78rem;
+            color: var(--text-soft);
+            font-weight: 500;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 1.5px solid var(--cream-dark);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: .88rem;
+            transition: border-color .15s, background .15s, color .15s;
+        }
+
+        .time-slot:hover {
+            border-color: var(--orange);
+            background: #fff5ed;
+        }
+
+        .time-slot.active {
+            background: var(--orange);
+            color: white;
+            border-color: var(--orange);
+        }
+
+        /* ── DURATION PICKER ── */
+        .duration-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .duration-btn {
+            padding: 9px 16px;
+            border: 1.5px solid var(--cream-dark);
+            border-radius: 8px;
+            background: var(--cream);
+            color: var(--brown-mid);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color .15s, background .15s, color .15s;
+        }
+
+        .duration-btn:hover {
+            border-color: var(--orange);
+            background: #fff5ed;
+        }
+
+        .duration-btn.active {
+            background: var(--orange);
+            color: white;
+            border-color: var(--orange);
+        }
+
+        /* ── SMART TABLE GRID ── */
+        .table-availability-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .table-avail-btn {
+            padding: 10px 6px;
+            border-radius: 9px;
+            border: 1.5px solid var(--cream-dark);
+            background: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .82rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color .15s, background .15s, color .15s, transform .1s;
+            color: var(--brown-mid);
+        }
+
+        .table-avail-btn:hover:not(.reserved) {
+            border-color: var(--orange);
+            background: #fff5ed;
+        }
+
+        .table-avail-btn.selected {
+            background: var(--brown-mid);
+            border-color: var(--brown-mid);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .table-avail-btn.reserved {
+            background: #fdf0f0;
+            border-color: #e8c0c0;
+            color: #b07070;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .table-avail-btn .t-status {
+            display: block;
+            font-size: .68rem;
+            margin-top: 2px;
+            opacity: .75;
+        }
+
+        .table-hint {
+            font-size: .78rem;
+            color: var(--text-soft);
+            margin-top: 8px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .table-hint-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        .guests {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .guest-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1.5px solid var(--cream-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: .9rem;
+            font-weight: 500;
+            transition: border-color .15s, background .15s, color .15s;
+        }
+
+        .guest-btn:hover {
+            border-color: var(--orange);
+        }
+
+        .guest-btn.active {
+            background: var(--orange);
+            color: white;
+            border-color: var(--orange);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px 13px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1.5px solid var(--cream-dark);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .92rem;
+            color: var(--text);
+            background: var(--cream);
+            transition: border-color .2s;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--orange);
+            background: white;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: .82rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-soft);
+            margin-top: 16px;
+            margin-bottom: 2px;
+        }
+
+        .confirm-btn {
+            background: var(--brown-mid);
+            color: white;
+            border: none;
+            padding: 13px;
+            margin-top: 20px;
+            width: 100%;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            letter-spacing: .03em;
+        }
+
+        .confirm-btn:hover {
+            background: var(--brown-warm);
+            transform: translateY(-1px);
+        }
+
+        .confirm-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ── FLASH MESSAGE ── */
+        .flash {
+            background: var(--green-lt);
+            color: var(--green);
+            border-left: 4px solid var(--green);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: .9rem;
+            font-weight: 500;
+            max-width: 680px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
 
+    <div class="navbar">
+        <h2>The Best Café</h2>
+        <div class="nav-links" style="display:flex;align-items:center;">
+            <a onclick="showSection('menu')">Menu</a>
+            <a onclick="showSection('booking')">Book Table</a>
+            <a href="/logout">Logout</a>
 
-<div class="header">
-<h1>Customer Panel</h1>
-</div>
+            <!-- CART ICON -->
+            <div class="nav-cart" id="navCart" onclick="toggleCartDropdown(event)">
+                <span class="nav-cart-icon">🛒</span>
+                <span class="nav-cart-badge" id="navCartBadge">0</span>
 
-<div class="container">
+                <!-- DROPDOWN -->
+                <div class="cart-dropdown" id="cartDropdown" onclick="event.stopPropagation()">
+                    <div class="cart-dropdown-header">
+                        Your Cart
+                        <button class="cart-dropdown-close" onclick="closeCartDropdown()">&#x2715;</button>
+                    </div>
 
-<div class="card">
-<h2>Menu</h2>
-<p>View food menu</p>
-<a href="/menu">Open Menu</a>
-</div>
+                    <!-- items list -->
+                    <div class="cart-dropdown-body" id="cartDropBody">
+                        <div class="cart-drop-empty">Your cart is empty</div>
+                    </div>
 
-<div class="card">
-<h2>Place Order</h2>
-<p>Order food from menu</p>
-<a href="/menu">Order Now</a>
-</div>
+                    <!-- total -->
+                    <div class="cart-dropdown-footer">
+                        <span class="cart-drop-total-label">Total</span>
+                        <span class="cart-drop-total-amt">&#8377;<span id="dropTotal">0</span></span>
+                    </div>
 
-<div class="card">
-<h2>Reserve Table</h2>
-<p>Book table in advance</p>
-<a href="/prebook">Reserve</a>
-</div>
+                    <!-- table picker -->
+                    <div class="drop-table-section">
+                        <div class="drop-table-label">Select a Table</div>
+                        <div class="drop-table-grid" id="dropTableGrid">
+                            {% for table in tables %}
+                            <button type="button"
+                                class="drop-table-btn {% if table.status != 'available' %}unavailable{% endif %}"
+                                onclick="selectDropTable(this, {{ table.table_number }})">
+                                T{{ table.table_number }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <div class="drop-selected-notice" id="dropTableNotice"></div>
+                    </div>
 
-<div class="card">
-<h2>Logout</h2>
-<a href="/">Logout</a>
-</div>
+                    <!-- place order form -->
+                    <form action="/place_order" method="POST">
+                        <input type="hidden" name="items" id="items">
+                        <input type="hidden" name="total_price" id="total_price">
+                        <input type="hidden" name="table_number" id="tableInput">
+                        <button class="drop-order-btn" id="placeOrderBtn" disabled>
+                            Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-</div>
+    <div class="container">
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for msg in messages %}
+        <div class="flash">{{ msg }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- ══ MENU SECTION ══ -->
+        <div id="menuSection">
+            <div class="section-title">Our Menu</div>
+            <div class="section-sub">Choose your items and select a table to place your order</div>
+
+            <div class="menu-container">
+                {% for item in items %}
+                {% set upload_path = 'uploads/' + item.image %}
+                {% set image_path = 'images/' + item.image %}
+
+                <div class="menu-card">
+                    <img src="{{ url_for('static', filename=upload_path) }}"
+                        onerror="this.onerror=null; this.src='{{ url_for('static', filename=image_path) }}';">
+
+                    <div class="menu-card-body">
+                        <h3>{{ item.name }}</h3>
+                        <div class="category">{{ item.category }}</div>
+                        <div class="price">₹{{ item.price }}</div>
+                        <div class="stock">Stock: {{ item.stock }}</div>
+
+                        <div class="qty-controls">
+                            <button class="qty-btn"
+                                onclick="changeQty('{{ item.name }}', {{ item.price }}, -1)">−</button>
+                            <span class="qty-display" id="qty-{{ item.name | replace(' ', '_') }}">0</span>
+                            <button class="qty-btn"
+                                onclick="changeQty('{{ item.name }}', {{ item.price }}, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div><!-- /menu-container -->
+        </div><!-- /menuSection -->
+
+        <!-- ══ BOOKING SECTION ══ -->
+        <div id="bookingSection" class="hidden">
+
+            <!-- MY BOOKING BANNER (shown if user already has a booking) -->
+            {% if my_booking %}
+            <div class="my-booking-banner">
+                <div class="my-booking-inner">
+                    <div class="my-booking-icon">📅</div>
+                    <div class="my-booking-content">
+                        <div class="my-booking-label">Your Active Reservation</div>
+                        <div class="my-booking-msg">
+                            You have booked <strong>Table {{ my_booking.table_number }}</strong>
+                            on <strong>{{ my_booking.date }}</strong>
+                            from <strong>{{ my_booking.time }}</strong>
+                            for <strong>{{ my_booking.duration }} hour{{ 's' if my_booking.duration != 1 else ''
+                                }}</strong>
+                        </div>
+                        <div class="my-booking-meta">
+                            <span class="my-booking-chip">📍 Table {{ my_booking.table_number }}</span>
+                            <span class="my-booking-chip">🗓 {{ my_booking.date }}</span>
+                            <span class="my-booking-chip">🕐 {{ my_booking.time }}</span>
+                            <span class="my-booking-chip">⏱ {{ my_booking.duration }}h duration</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="booking-card">
+                <div class="section-title">Book a Table</div>
+                <div class="section-sub" style="margin-bottom:20px">Reserve your spot at Brew & Bite</div>
+
+                <form action="/book_table" method="POST" id="bookingForm">
+
+                    <label>Date</label>
+                    <input type="date" name="date" id="bookingDate" required onchange="refreshTableAvailability()">
+
+                    <label>Start Time</label>
+                    <div class="time-grid" id="timeGrid">
+                        {% for t in ["10:00","10:30","11:00","11:30",
+                        "12:00","12:30","1:00","1:30",
+                        "2:00","2:30","3:00","3:30",
+                        "4:00","4:30","5:00","5:30",
+                        "6:00","6:30","7:00","7:30",
+                        "8:00","8:30","9:00"] %}
+                        <div class="time-slot" onclick="selectTime(this,'{{t}}')">{{t}}</div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="time" id="timeInput">
+
+                    <label>Duration</label>
+                    <div class="duration-grid" id="durationGrid">
+                        {% for d in [1, 2, 3, 4] %}
+                        <button type="button" class="duration-btn" onclick="selectDuration(this, {{d}})">
+                            {{ d }} Hour{{ 's' if d > 1 else '' }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="duration" id="durationInput">
+
+                    <label>Guests</label>
+                    <div class="guests">
+                        {% for i in range(1,9) %}
+                        <div class="guest-btn" onclick="selectGuest(this, {{i}})">{{i}}</div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="guests" id="guestInput">
+
+                    <label>Your Name</label>
+                    <input type="text" name="name" placeholder="Your name" required>
+
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" placeholder="Phone number" required>
+
+                    <label>Select Table</label>
+                    <div class="table-availability-grid" id="tableAvailGrid">
+                        {% for table in tables %}
+                        <button type="button"
+                            class="table-avail-btn {% if table.status != 'available' %}reserved{% endif %}"
+                            data-table="{{ table.table_number }}" data-status="{{ table.status }}"
+                            onclick="selectBookingTable(this, {{ table.table_number }})">
+                            T{{ table.table_number }}
+                            <span class="t-status">
+                                {% if table.status == 'available' %}Free{% else %}Taken{% endif %}
+                            </span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <div class="table-hint">
+                        <span><span class="table-hint-dot" style="background:var(--brown-mid)"></span>Available</span>
+                        <span><span class="table-hint-dot" style="background:#e8c0c0"></span>Reserved for selected
+                            time</span>
+                    </div>
+                    <input type="hidden" name="table_number" id="bookingTableInput">
+
+                    <!-- bookings data for JS conflict check -->
+                    <input type="hidden" id="bookingsData" value='{{ bookings_json | safe }}'>
+
+                    <button class="confirm-btn" id="confirmBtn" disabled type="submit">
+                        Confirm Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <script>
+        // ── Cart State ──────────────────────────────────
+        let cartMap = {}   // { itemName: { price, qty } }
+        let total = 0
+        let selectedTable = null
+
+        function changeQty(name, price, delta) {
+            if (!cartMap[name]) cartMap[name] = { price: price, qty: 0 }
+            let newQty = cartMap[name].qty + delta
+            if (newQty < 0) newQty = 0
+            cartMap[name].qty = newQty
+            if (newQty === 0) delete cartMap[name]
+
+            let safeId = name.replace(/ /g, '_')
+            document.getElementById('qty-' + safeId).textContent = newQty
+
+            renderCart()
+        }
+
+        function renderCart() {
+            let entries = Object.entries(cartMap)
+            total = 0
+
+            // ── badge ──
+            let totalItems = entries.reduce((sum, [, o]) => sum + o.qty, 0)
+            let badge = document.getElementById('navCartBadge')
+            badge.textContent = totalItems
+            badge.classList.toggle('visible', totalItems > 0)
+
+            // ── dropdown item list ──
+            let dropBody = document.getElementById('cartDropBody')
+            dropBody.innerHTML = ''
+            if (entries.length === 0) {
+                dropBody.innerHTML = '<div class="cart-drop-empty">Your cart is empty</div>'
+            } else {
+                entries.forEach(([name, obj]) => {
+                    let subtotal = obj.price * obj.qty
+                    total += subtotal
+                    let div = document.createElement('div')
+                    div.className = 'cart-drop-item'
+                    div.innerHTML = `
+                        <span>
+                            <span class="cart-drop-name">${name}</span>
+                            <span class="cart-drop-qty"> ×${obj.qty}</span>
+                        </span>
+                        <span class="cart-drop-price">&#8377;${subtotal}</span>
+                    `
+                    dropBody.appendChild(div)
+                })
+            }
+
+            document.getElementById('dropTotal').textContent = total
+
+            // ── hidden form fields ──
+            document.getElementById('total_price').value = total
+            let flatItems = []
+            entries.forEach(([name, obj]) => {
+                for (let i = 0; i < obj.qty; i++)
+                    flatItems.push({ name: name, price: obj.price })
+            })
+            document.getElementById('items').value = JSON.stringify(flatItems)
+
+            updatePlaceOrderBtn()
+        }
+
+        // ── Dropdown Table Selection ─────────────────────
+        function selectDropTable(btn, tableNum) {
+            document.querySelectorAll('.drop-table-btn').forEach(b => b.classList.remove('selected'))
+            btn.classList.add('selected')
+            selectedTable = tableNum
+            document.getElementById('tableInput').value = tableNum
+            document.getElementById('dropTableNotice').textContent = '✔ Table ' + tableNum + ' selected'
+            updatePlaceOrderBtn()
+        }
+
+        function updatePlaceOrderBtn() {
+            let hasItems = Object.keys(cartMap).length > 0
+            let hasTable = selectedTable !== null
+            document.getElementById('placeOrderBtn').disabled = !(hasItems && hasTable)
+        }
+
+        // ── Dropdown open / close ────────────────────────
+        function toggleCartDropdown(e) {
+            e.stopPropagation()
+            document.getElementById('cartDropdown').classList.toggle('open')
+        }
+
+        function closeCartDropdown() {
+            document.getElementById('cartDropdown').classList.remove('open')
+        }
+
+        document.addEventListener('click', () => closeCartDropdown())
+
+        // ── Section switcher ─────────────────────────────
+        function showSection(section) {
+            document.getElementById('menuSection').classList.add('hidden')
+            document.getElementById('bookingSection').classList.add('hidden')
+            document.getElementById(section === 'menu' ? 'menuSection' : 'bookingSection')
+                .classList.remove('hidden')
+        }
+
+        // ── Booking state ────────────────────────────────
+        let selectedTime = null
+        let selectedDuration = null
+        let selectedBookingTable = null
+
+        function selectTime(el, time) {
+            document.querySelectorAll('.time-slot').forEach(e => e.classList.remove('active'))
+            el.classList.add('active')
+            selectedTime = time
+            document.getElementById('timeInput').value = time
+            refreshTableAvailability()
+        }
+
+        function selectDuration(el, hours) {
+            document.querySelectorAll('.duration-btn').forEach(e => e.classList.remove('active'))
+            el.classList.add('active')
+            selectedDuration = hours
+            document.getElementById('durationInput').value = hours
+            refreshTableAvailability()
+        }
+
+        function selectGuest(el, num) {
+            document.querySelectorAll('.guest-btn').forEach(e => e.classList.remove('active'))
+            el.classList.add('active')
+            document.getElementById('guestInput').value = num
+        }
+
+        function selectBookingTable(el, tableNum) {
+            if (el.classList.contains('reserved')) return
+            document.querySelectorAll('.table-avail-btn').forEach(b => b.classList.remove('selected'))
+            el.classList.add('selected')
+            selectedBookingTable = tableNum
+            document.getElementById('bookingTableInput').value = tableNum
+            updateConfirmBtn()
+        }
+
+        function updateConfirmBtn() {
+            let ok = selectedTime && selectedDuration && selectedBookingTable
+            document.getElementById('confirmBtn').disabled = !ok
+        }
+
+        // ── Smart conflict detection ─────────────────────
+        // Convert "HH:MM" or "H:MM" (café PM hours 1–9 treated as 13–21) to minutes
+        function parseTime(str) {
+            let parts = str.split(':')
+            let h = parseInt(parts[0]), m = parseInt(parts[1]) || 0
+            if (h >= 1 && h <= 9) h += 12   // 1:00 → 13:00, etc.
+            return h * 60 + m
+        }
+
+        function refreshTableAvailability() {
+            let date = document.getElementById('bookingDate').value
+            let time = selectedTime
+            let duration = selectedDuration
+            let allBtns = document.querySelectorAll('.table-avail-btn')
+
+            // reset buttons to their base status first
+            allBtns.forEach(btn => {
+                let base = btn.dataset.status
+                if (base === 'available') {
+                    btn.classList.remove('reserved')
+                    btn.style.pointerEvents = ''
+                    btn.querySelector('.t-status').textContent = 'Free'
+                }
+            })
+
+            if (!date || !time || !duration) return
+
+            let reqStart = parseTime(time)
+            let reqEnd = reqStart + duration * 60
+
+            let bookings = []
+            try { bookings = JSON.parse(document.getElementById('bookingsData').value || '[]') }
+            catch (e) { }
+
+            // find tables that conflict with the requested window
+            let conflicting = new Set()
+            bookings.forEach(b => {
+                if (b.date !== date) return
+                let bStart = parseTime(b.time)
+                let bEnd = bStart + (b.duration || 1) * 60
+                if (reqStart < bEnd && reqEnd > bStart)
+                    conflicting.add(String(b.table_number))
+            })
+
+            allBtns.forEach(btn => {
+                if (conflicting.has(btn.dataset.table)) {
+                    btn.classList.add('reserved')
+                    btn.classList.remove('selected')
+                    btn.style.pointerEvents = 'none'
+                    btn.querySelector('.t-status').textContent = 'Taken'
+                    if (String(selectedBookingTable) === btn.dataset.table) {
+                        selectedBookingTable = null
+                        document.getElementById('bookingTableInput').value = ''
+                        updateConfirmBtn()
+                    }
+                }
+            })
+        }
+    </script>
+
 </body>
+
 </html>

@@ -194,7 +194,14 @@ def admin_dashboard():
 
 @app.route("/customer")
 def customer():
-    return render_template("customer.html")
+    tables = Tables.query.order_by(Tables.table_number).all()
+    items = MenuItem.query.all()
+
+    return render_template(
+        "customer.html",
+        tables=tables,
+        items=items
+    )
 
 
 
@@ -369,29 +376,28 @@ def tables():
 
 @app.route("/place_order", methods=["POST"])
 def place_order():
-
     items = request.form.get("items")
     total = request.form.get("total_price")
+    table_number = request.form.get("table_number") or session.get("table_number")
 
     items_list = json.loads(items)
-
-    # reserved table number
-    table_number = session.get("table_number")
 
     new_order = Order(
         table_number=table_number,
         items=items,
         total=total
     )
-
     db.session.add(new_order)
     db.session.commit()
 
     return render_template(
-        "order_success.html",
+        "order_placed.html",
         items=items_list,
-        total=total
+        total=total,
+        order_id=new_order.id,        # ← add this
+        table_number=table_number      # ← add this
     )
+    
 @app.route("/order_success")
 def order_success():
     return render_template("order_success.html")
@@ -457,7 +463,7 @@ def book_table():
 
     flash(f"Table {table_number} reserved for {time}. You can now order food.")
 
-    return redirect("/menu")
+    return redirect("/customer")
 
 '''@app.route("/book_table", methods=["POST"])
 def book_table():
