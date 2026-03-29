@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Placed – Brew & Bite</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --brown-deep: #4a2510;
+            --brown-mid: #6b3e26;
+            --brown-warm: #8c5230;
+            --orange: #e07a2f;
+            --orange-lt: #f5a35a;
+            --cream: #faf6f1;
+            --cream-dark: #f0e9df;
+            --text: #2c1a0e;
+            --text-soft: #7a5c45;
+            --green: #3d8c5c;
+            --green-lt: #d4edd9;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: var(--brown-deep);
+            padding: 0 32px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            color: #fff;
+            letter-spacing: .03em;
+        }
+
+        .navbar-brand span {
+            color: var(--orange-lt);
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, .8);
+            text-decoration: none;
+            font-size: .88rem;
+            font-weight: 500;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            margin-left: 28px;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange-lt);
+        }
+
+        /* ── BACKGROUND BEANS ── */
+        .bg-decor {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bg-decor svg {
+            position: absolute;
+            opacity: .07;
+        }
+
+        .bg-decor svg:nth-child(1) {
+            top: -60px;
+            right: -60px;
+            width: 340px;
+            transform: rotate(25deg);
+        }
+
+        .bg-decor svg:nth-child(2) {
+            bottom: -80px;
+            left: -80px;
+            width: 380px;
+            transform: rotate(-15deg);
+        }
+
+        .bg-decor svg:nth-child(3) {
+            top: 40%;
+            left: 5%;
+            width: 120px;
+            transform: rotate(40deg);
+        }
+
+        /* ── LAYOUT ── */
+        .page-wrap {
+            min-height: calc(100vh - 60px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(74, 37, 16, .12);
+            padding: 52px 48px 44px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            animation: cardIn .55s cubic-bezier(.22, .8, .36, 1) both;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            border-radius: 20px 20px 0 0;
+            background: linear-gradient(90deg, var(--brown-mid), var(--orange), var(--orange-lt));
+        }
+
+        /* ── CHECK ICON ── */
+        .check-ring {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            background: var(--green-lt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            animation: pop .5s .3s cubic-bezier(.36, 1.6, .6, 1) both;
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .check-ring svg {
+            width: 38px;
+            height: 38px;
+            stroke: var(--green);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .check-ring svg path {
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            animation: drawCheck .4s .7s ease forwards;
+        }
+
+        @keyframes drawCheck {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* ── HEADING ── */
+        .card h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--brown-deep);
+            margin-bottom: 10px;
+            animation: fadeUp .4s .45s ease both;
+        }
+
+        .card>p {
+            font-size: .95rem;
+            color: var(--text-soft);
+            line-height: 1.65;
+            max-width: 320px;
+            margin: 0 auto 24px;
+            font-weight: 300;
+            animation: fadeUp .4s .55s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── STATUS PILL ── */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--cream-dark);
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-size: .82rem;
+            font-weight: 500;
+            color: var(--brown-warm);
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            animation: fadeUp .4s .6s ease both;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--orange);
+            animation: pulse 1.5s 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(1.3);
+            }
+        }
+
+        /* ── ETA ROW ── */
+        .eta-row {
+            display: flex;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1.5px solid var(--cream-dark);
+            background: var(--cream);
+            margin-bottom: 20px;
+            animation: fadeUp .4s .65s ease both;
+        }
+
+        .eta-item {
+            flex: 1;
+            padding: 14px 8px;
+            text-align: center;
+        }
+
+        .eta-item+.eta-item {
+            border-left: 1.5px solid var(--cream-dark);
+        }
+
+        .eta-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            color: var(--text-soft);
+            margin-bottom: 5px;
+        }
+
+        .eta-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--brown-deep);
+        }
+
+        /* ── ORDER SUMMARY ── */
+        .order-summary {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            text-align: left;
+            border: 1.5px solid var(--cream-dark);
+            animation: fadeUp .4s .7s ease both;
+        }
+
+        .order-summary-title {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            color: var(--text-soft);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: .88rem;
+            color: var(--text);
+            padding: 6px 0;
+            border-bottom: 1px solid var(--cream-dark);
+        }
+
+        .order-summary-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .order-summary-item .item-qty {
+            color: var(--text-soft);
+            font-size: .8rem;
+            margin-left: 4px;
+        }
+
+        .order-summary-item span:last-child {
+            font-weight: 600;
+            color: var(--brown-warm);
+        }
+
+        .order-summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid var(--cream-dark);
+        }
+
+        .order-summary-total span:first-child {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--text-soft);
+            font-weight: 600;
+        }
+
+        .order-summary-total span:last-child {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--brown-deep);
+        }
+
+        /* ── BUTTONS ── */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            animation: fadeUp .4s .75s ease both;
+        }
+
+        .btn {
+            padding: 13px 28px;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            letter-spacing: .03em;
+            transition: transform .15s, box-shadow .15s, background .2s;
+        }
+
+        .btn:active {
+            transform: scale(.97);
+        }
+
+        .btn-primary {
+            background: var(--brown-mid);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(107, 62, 38, .3);
+        }
+
+        .btn-primary:hover {
+            background: var(--brown-warm);
+            box-shadow: 0 6px 18px rgba(107, 62, 38, .4);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--cream-dark);
+            color: var(--brown-mid);
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e8ddd3;
+            transform: translateY(-1px);
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--brown-deep);
+            color: #fff;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-size: .88rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+            animation: slideIn .4s .9s cubic-bezier(.22, .8, .36, 1) both,
+                slideOut .35s 4.5s ease forwards;
+            z-index: 999;
+        }
+
+        .toast svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            stroke: var(--green-lt);
+            stroke-width: 2.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            to {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">Brew <span>&</span> Bite</div>
+        <div class="nav-links">
+            <a href="/customer">Menu</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="bg-decor">
+        <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="40" rx="42" ry="30" fill="var(--brown-mid)" />
+            <path d="M50 12 Q62 40 50 68" stroke="var(--cream)" stroke-width="4" fill="none" stroke-linecap="round" />
+        </svg>
+        <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="40" rx="42" ry="30" fill="var(--brown-mid)" />
+            <path d="M50 12 Q62 40 50 68" stroke="var(--cream)" stroke-width="4" fill="none" stroke-linecap="round" />
+        </svg>
+        <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="40" rx="42" ry="30" fill="var(--brown-mid)" />
+            <path d="M50 12 Q62 40 50 68" stroke="var(--cream)" stroke-width="4" fill="none" stroke-linecap="round" />
+        </svg>
+    </div>
+
+    <div class="page-wrap">
+        <div class="card">
+
+            <div class="check-ring">
+                <svg viewBox="0 0 24 24">
+                    <path d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+
+            <h1>Order Placed!</h1>
+            <p>Your order has been sent to the kitchen. Please wait while we prepare it.</p>
+
+            <div class="status-pill">
+                <div class="status-dot"></div>
+                Kitchen is preparing your order
+            </div>
+
+            <!-- ✅ Dynamic order ID and table number -->
+            <div class="eta-row">
+                <div class="eta-item">
+                    <div class="eta-label">Est. Ready In</div>
+                    <div class="eta-value">15 min</div>
+                </div>
+                <div class="eta-item">
+                    <div class="eta-label">Order No.</div>
+                    <div class="eta-value">#{{ order_id }}</div>
+                </div>
+                <div class="eta-item">
+                    <div class="eta-label">Table</div>
+                    <div class="eta-value">{{ table_number if table_number else '—' }}</div>
+                </div>
+            </div>
+
+            <!-- ✅ Dynamic order summary from items list -->
+            <div class="order-summary">
+                <div class="order-summary-title">Order Summary</div>
+                {% set seen = namespace(names=[]) %}
+                {% for item in items %}
+                {% if item.name not in seen.names %}
+                {% set count = items | selectattr('name', 'equalto', item.name) | list | length %}
+                <div class="order-summary-item">
+                    <span>
+                        {{ item.name }}
+                        {% if count > 1 %}<span class="item-qty">×{{ count }}</span>{% endif %}
+                    </span>
+                    <span>₹{{ item.price * count }}</span>
+                </div>
+                {% set _ = seen.names.append(item.name) %}
+                {% endif %}
+                {% endfor %}
+                <div class="order-summary-total">
+                    <span>Total</span>
+                    <span>₹{{ total }}</span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="window.location.href='/customer'">Order More</button>
+                <button class="btn btn-secondary" onclick="window.location.href='/customer'">Home</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="toast">
+        <svg viewBox="0 0 24 24">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+        Order placed successfully!
+    </div>
+
+</body>
+
+</html>
