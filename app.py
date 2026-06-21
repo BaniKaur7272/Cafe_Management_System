@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.secret_key = "cafe_secret_key"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bani@localhost/cafe_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1343@localhost/cafe_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -17,6 +17,8 @@ db = SQLAlchemy(app)
 # -----------------------
 # MODELS
 # -----------------------
+
+# class User(db.Model):))
 
 class MenuItem(db.Model):
     __tablename__ = "menu_items"
@@ -112,7 +114,7 @@ def order_success():
 @app.route("/free_table/<int:table_number>")
 def free_table(table_number):
 
-    table = Table.query.filter_by(table_number=table_number).first()
+    table = Tables.query.filter_by(table_number=table_number).first()
 
     if table:
         table.status = "available"
