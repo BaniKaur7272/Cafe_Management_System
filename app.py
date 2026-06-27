@@ -441,6 +441,11 @@ def book_table():
 
     name = request.form["name"]
     phone = request.form["phone"]
+    
+    if not phone.isdigit() or len(phone) != 10:
+        flash("Invalid number must be exactly 10 digits")
+        return redirect("/customer")
+    
     date = request.form["date"]
     time = request.form["time"]
     table_number = int(request.form["table_number"])
