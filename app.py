@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -46,6 +46,7 @@ class Tables(db.Model):
     status = db.Column(db.String(20))
     reserved_by = db.Column(db.String(100))
     reserved_until = db.Column(db.DateTime)
+    reserved_from = db.Column(db.DateTime)
 
 class MenuItem(db.Model):
 
@@ -81,6 +82,8 @@ class TableBooking(db.Model):
     table_number = db.Column(db.Integer)
     date = db.Column(db.String(20))
     time = db.Column(db.String(20))
+    duration = db.Column(db.Integer)
+    guests = db.Column(db.Integer)
 
 
 
@@ -104,6 +107,7 @@ def check_reservations():
 
                 table.status = "available"
                 table.reserved_by = None
+                table.reserved_from = None
                 table.reserved_until = None
 
     db.session.commit()
@@ -197,10 +201,22 @@ def customer():
     tables = Tables.query.order_by(Tables.table_number).all()
     items = MenuItem.query.all()
 
+    bookings = TableBooking.query.all()
+    bookings_json = []
+
+    for booking in bookings:
+        bookings_json.append({
+            "table_number": booking.table_number,
+            "date": booking.date,
+            "time": booking.time,
+            "duration": booking.duration
+        })
+
     return render_template(
         "customer.html",
         tables=tables,
-        items=items
+        items=items,
+        bookings_json=json.dumps(bookings_json)
     )
 
 
@@ -448,6 +464,8 @@ def book_table():
     
     date = request.form["date"]
     time = request.form["time"]
+    duration = int(request.form["duration"])
+    guests = int(request.form["guests"])
     table_number = int(request.form["table_number"])
 
     table = Tables.query.filter_by(table_number=table_number).first()
@@ -455,12 +473,25 @@ def book_table():
     # combine date + time
     date = request.form["date"]
     time = request.form["time"]
-    reserve_time = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M")
-
+    reserve_from = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M %p")
+    reserve_until = reserve_from + timedelta(hours=duration)
+    
+    booking = TableBooking(
+        name=name,
+        phone=phone,
+        table_number=table_number,
+        date=date,
+        time=time,
+        duration=duration,
+        guests=guests
+    )
+    
     table.status = "reserved"
     table.reserved_by = name
-    table.reserved_until = reserve_time
-
+    table.reserved_from = reserve_from
+    table.reserved_until = reserve_until
+    
+    db.session.add(booking)
     db.session.commit()
 
     session["table_number"] = table_number

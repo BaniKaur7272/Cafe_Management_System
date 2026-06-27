@@ -91,8 +91,14 @@
                 <p>Status: <b>{{ table.status }}</b></p>
     
                 {% if table.status == "reserved" %}
-                <p>Reserved by: {{ table.reserved_by }}</p>
-                <p>Until: {{ table.reserved_until }}</p>
+                    <p>Reserved by: {{ table.reserved_by }}</p>
+                    {% if table.reserved_from %}
+                        <p>Reserved From: {{ table.reserved_from.strftime("%d %b %Y, %I:%M %p") }}</p>
+                    {% endif %}
+                
+                    {% if table.reserved_until %}
+                    <p>Reserved Until: {{ table.reserved_until.strftime("%d %b %Y, %I:%M %p") }}</p>
+                    {% endif %}
                 {% endif %}
             </div>
             {% endfor %}

@@ -943,12 +943,12 @@
 
                     <label>Start Time</label>
                     <div class="time-grid" id="timeGrid">
-                        {% for t in ["10:00","10:30","11:00","11:30",
-                        "12:00","12:30","1:00","1:30",
-                        "2:00","2:30","3:00","3:30",
-                        "4:00","4:30","5:00","5:30",
-                        "6:00","6:30","7:00","7:30",
-                        "8:00","8:30","9:00"] %}
+                        {% for t in ["10:00 AM","10:30 AM","11:00 AM","11:30 AM",
+                        "12:00 PM","12:30 PM","1:00 PM","1:30 PM",
+                        "2:00 PM","2:30 PM","3:00 PM","3:30 PM",
+                        "4:00 PM","4:30 PM","5:00 PM","5:30 PM",
+                        "6:00 PM","6:30 PM","7:00 PM","7:30 PM",
+                        "8:00 PM","8:30 PM","9:00 PM"] %}
                         <div class="time-slot" onclick="selectTime(this,'{{t}}')">{{t}}</div>
                         {% endfor %}
                     </div>
@@ -976,19 +976,18 @@
                     <input type="text" name="name" placeholder="Your name" required>
 
                     <label>Phone Number</label>
-                    <input type="text" name="phone" placeholder="Phone number" maxlength="10" pattern="[0-9]{10}" required>
+                    <input type="text" name="phone" placeholder="Phone number" maxlength="10" pattern="[0-9]{10}"
+                        required>
 
                     <label>Select Table</label>
                     <div class="table-availability-grid" id="tableAvailGrid">
                         {% for table in tables %}
-                        <button type="button"
-                            class="table-avail-btn {% if table.status != 'available' %}reserved{% endif %}"
-                            data-table="{{ table.table_number }}" data-status="{{ table.status }}"
+                        <button type="button" class="table-avail-btn" data-table="{{ table.table_number }}"
+                            data-status="{{ table.status }}"
                             onclick="selectBookingTable(this, {{ table.table_number }})">
                             T{{ table.table_number }}
                             <span class="t-status">
-                                {% if table.status == 'available' %}Free{% else %}Taken{% endif %}
-                            </span>
+                                Free </span>
                         </button>
                         {% endfor %}
                     </div>
@@ -1154,12 +1153,14 @@
         }
 
         // ── Smart conflict detection ─────────────────────
-        // Convert "HH:MM" or "H:MM" (café PM hours 1–9 treated as 13–21) to minutes
         function parseTime(str) {
-            let parts = str.split(':')
-            let h = parseInt(parts[0]), m = parseInt(parts[1]) || 0
-            if (h >= 1 && h <= 9) h += 12   // 1:00 → 13:00, etc.
-            return h * 60 + m
+            let [time, period] = str.split(" ");
+            let [h, m] = time.split(":").map(Number);
+
+            if (period === "PM" && h !== 12) h += 12;
+            if (period === "AM" && h === 12) h = 0;
+
+            return h * 60 + m;
         }
 
         function refreshTableAvailability() {
@@ -1170,12 +1171,13 @@
 
             // reset buttons to their base status first
             allBtns.forEach(btn => {
-                let base = btn.dataset.status
-                if (base === 'available') {
+                allBtns.forEach(btn => {
+
                     btn.classList.remove('reserved')
                     btn.style.pointerEvents = ''
                     btn.querySelector('.t-status').textContent = 'Free'
-                }
+
+                })
             })
 
             if (!date || !time || !duration) return
